@@ -1,15 +1,66 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, BellOff, Send } from 'lucide-react';
+import { Heart, BellOff, Bell, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Index() {
   const [reply, setReply] = useState('');
   const [replies, setReplies] = useState([
     { id: 1, content: '😍', timestamp: 'Feb 6, 2026, 5:10 PM' }
   ]);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if notifications are already enabled
+    if ('Notification' in window && Notification.permission === 'granted') {
+      setNotificationsEnabled(true);
+    }
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    if (!('Notification' in window)) {
+      toast({
+        title: 'Not Supported',
+        description: 'Notifications are not supported in this browser',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
+      setNotificationsEnabled(true);
+      toast({
+        title: 'Already Enabled',
+        description: 'Notifications are already enabled',
+      });
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      setNotificationsEnabled(true);
+      toast({
+        title: 'Notifications Enabled! 💖',
+        description: 'You will receive daily love note reminders',
+      });
+      
+      // Send a test notification
+      new Notification('Love Notes for Regine', {
+        body: 'You will receive daily reminders here! ❤️',
+        icon: '/heart-icon.png',
+      });
+    } else {
+      toast({
+        title: 'Permission Denied',
+        description: 'Please enable notifications in your browser settings',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const handleSendReply = () => {
     if (reply.trim()) {
@@ -26,6 +77,10 @@ export default function Index() {
         })
       }]);
       setReply('');
+      toast({
+        title: 'Reply Sent! 💕',
+        description: 'Your reply has been added',
+      });
     }
   };
 
@@ -44,9 +99,19 @@ export default function Index() {
           <Button 
             variant="outline" 
             className="border-2 border-primary text-primary hover:bg-primary/10 rounded-full px-8"
+            onClick={handleEnableNotifications}
           >
-            <BellOff className="w-4 h-4 mr-2" />
-            Enable Notifications
+            {notificationsEnabled ? (
+              <>
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications Enabled
+              </>
+            ) : (
+              <>
+                <BellOff className="w-4 h-4 mr-2" />
+                Enable Notifications
+              </>
+            )}
           </Button>
         </div>
 

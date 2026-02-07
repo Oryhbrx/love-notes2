@@ -18,6 +18,7 @@
 - [DONE] Create public love note view page
 - [DONE] Create admin dashboard
 - [DONE] Add routing between pages
-- [PENDING] Implement notification functionality
-- [PENDING] Add archive feature
+- [DONE] Implement notification functionality
+- [DONE] Add archive feature
+- [DONE] Add create note dialog
 - [PENDING] Connect to Supabase for data persistence

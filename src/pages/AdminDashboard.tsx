@@ -1,13 +1,19 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Download, LogOut, Plus, Trash2, MessageCircle, Archive } from 'lucide-react';
+import { Heart, Download, LogOut, Plus, Trash2, MessageCircle, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 interface Note {
   id: number;
   title: string;
+  content: string;
   timestamp: string;
   replies: Reply[];
   archived: boolean;
@@ -21,10 +27,12 @@ interface Reply {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [notes, setNotes] = useState<Note[]>([
     {
       id: 1,
       title: 'Regine Tapado 💖',
+      content: 'You are loved today and always! ❤️',
       timestamp: 'Feb 6, 2026, 5:10 PM',
       replies: [
         { id: 1, content: '😍', timestamp: 'Feb 6, 2026, 5:10 PM' }
@@ -32,15 +40,79 @@ export default function AdminDashboard() {
       archived: false
     }
   ]);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newNoteTitle, setNewNoteTitle] = useState('');
+  const [newNoteContent, setNewNoteContent] = useState('');
 
   const handleLogout = () => {
     navigate('/');
   };
 
+  const handleCreateNote = () => {
+    if (!newNoteTitle.trim() || !newNoteContent.trim()) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill in both title and content',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const newNote: Note = {
+      id: Date.now(),
+      title: newNoteTitle,
+      content: newNoteContent,
+      timestamp: new Date().toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }),
+      replies: [],
+      archived: false
+    };
+
+    setNotes([newNote, ...notes]);
+    setNewNoteTitle('');
+    setNewNoteContent('');
+    setIsCreateDialogOpen(false);
+    
+    toast({
+      title: 'Love Note Created! 💖',
+      description: 'Your new love note has been created',
+    });
+  };
+
   const handleDeleteNote = (noteId: number) => {
     if (confirm('Are you sure you want to delete this note?')) {
       setNotes(notes.filter(note => note.id !== noteId));
+      toast({
+        title: 'Note Deleted',
+        description: 'The love note has been removed',
+      });
     }
+  };
+
+  const handleArchiveNote = (noteId: number) => {
+    setNotes(notes.map(note => 
+      note.id === noteId ? { ...note, archived: true } : note
+    ));
+    toast({
+      title: 'Note Archived',
+      description: 'The love note has been archived',
+    });
+  };
+
+  const handleUnarchiveNote = (noteId: number) => {
+    setNotes(notes.map(note => 
+      note.id === noteId ? { ...note, archived: false } : note
+    ));
+    toast({
+      title: 'Note Restored',
+      description: 'The love note has been restored',
+    });
   };
 
   const activeNotes = notes.filter(note => !note.archived);
@@ -79,12 +151,60 @@ export default function AdminDashboard() {
         </div>
 
         {/* Create New Note Button */}
-        <Button 
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Create New Love Note
-        </Button>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create New Love Note
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl text-primary">Create New Love Note</DialogTitle>
+              <DialogDescription>
+                Write a beautiful love note to share daily reminders
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Recipient Name</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Regine Tapado 💖"
+                  value={newNoteTitle}
+                  onChange={(e) => setNewNoteTitle(e.target.value)}
+                  className="border-border focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="content">Love Note Message</Label>
+                <Textarea
+                  id="content"
+                  placeholder="Write your heartfelt message here..."
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  className="min-h-[150px] border-border focus:ring-primary"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsCreateDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={handleCreateNote}
+              >
+                Create Love Note
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Tabs */}
         <Tabs defaultValue="active" className="w-full">
@@ -105,43 +225,105 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="active" className="space-y-4 mt-6">
-            {activeNotes.map((note) => (
-              <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-script text-primary">{note.title}</h3>
-                  <p className="text-sm text-muted-foreground">{note.timestamp}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MessageCircle className="w-4 h-4" />
-                    <span className="text-sm">Replies ({note.replies.length})</span>
-                  </div>
-                  
-                  {note.replies.map((reply) => (
-                    <div key={reply.id} className="bg-secondary/30 rounded-xl p-3 space-y-1">
-                      <p className="text-lg">{reply.content}</p>
-                      <p className="text-xs text-muted-foreground">{reply.timestamp}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full border-destructive text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteNote(note.id)}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
-                </Button>
+            {activeNotes.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                No active notes. Create your first love note!
               </div>
-            ))}
+            ) : (
+              activeNotes.map((note) => (
+                <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-script text-primary">{note.title}</h3>
+                    <p className="text-sm text-muted-foreground">{note.timestamp}</p>
+                    <p className="text-foreground mt-2">{note.content}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MessageCircle className="w-4 h-4" />
+                      <span className="text-sm">Replies ({note.replies.length})</span>
+                    </div>
+                    
+                    {note.replies.map((reply) => (
+                      <div key={reply.id} className="bg-secondary/30 rounded-xl p-3 space-y-1">
+                        <p className="text-lg">{reply.content}</p>
+                        <p className="text-xs text-muted-foreground">{reply.timestamp}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-muted text-muted-foreground hover:bg-muted/10"
+                      onClick={() => handleArchiveNote(note.id)}
+                    >
+                      <Archive className="w-4 h-4 mr-2" />
+                      Archive
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDeleteNote(note.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </TabsContent>
 
-          <TabsContent value="archived" className="mt-6">
-            <div className="text-center py-12 text-muted-foreground">
-              No archived notes
-            </div>
+          <TabsContent value="archived" className="space-y-4 mt-6">
+            {archivedNotes.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                No archived notes
+              </div>
+            ) : (
+              archivedNotes.map((note) => (
+                <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4 opacity-75">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-script text-primary">{note.title}</h3>
+                    <p className="text-sm text-muted-foreground">{note.timestamp}</p>
+                    <p className="text-foreground mt-2">{note.content}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MessageCircle className="w-4 h-4" />
+                      <span className="text-sm">Replies ({note.replies.length})</span>
+                    </div>
+                    
+                    {note.replies.map((reply) => (
+                      <div key={reply.id} className="bg-secondary/30 rounded-xl p-3 space-y-1">
+                        <p className="text-lg">{reply.content}</p>
+                        <p className="text-xs text-muted-foreground">{reply.timestamp}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-primary text-primary hover:bg-primary/10"
+                      onClick={() => handleUnarchiveNote(note.id)}
+                    >
+                      <ArchiveRestore className="w-4 h-4 mr-2" />
+                      Restore
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDeleteNote(note.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </div>
