@@ -162,7 +162,7 @@ export default function Index() {
             <h3 className="font-semibold text-foreground">Your Replies:</h3>
             
             {currentNote.replies.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">No replies yet. Be the first to reply! 💕</p>
+              <p className="text-muted-foreground text-center py-4">reply ka po! 💕</p>
             ) : (
               currentNote.replies.map((r) => (
                 <div key={r.id} className="bg-secondary/30 rounded-xl p-4 space-y-1">
