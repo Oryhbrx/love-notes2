@@ -35,9 +35,18 @@ export default function Index() {
 
     if (Notification.permission === 'granted') {
       setNotificationsEnabled(true);
+      
+      // Send a test notification immediately
+      new Notification('Love Notes for Regine 💖', {
+        body: 'Notifications are working! You will receive daily reminders ❤️',
+        icon: '/heart-icon.png',
+        tag: 'love-note-test',
+        requireInteraction: false,
+      });
+      
       toast({
-        title: 'Already Enabled',
-        description: 'Notifications are already enabled',
+        title: 'Test Notification Sent! 💖',
+        description: 'Check your system notifications',
       });
       return;
     }
@@ -45,21 +54,29 @@ export default function Index() {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       setNotificationsEnabled(true);
-      toast({
-        title: 'Notifications Enabled! 💖',
-        description: 'You will receive daily love note reminders',
-      });
       
       // Send a test notification
-      new Notification('Love Notes for Regine', {
-        body: 'You will receive daily reminders here! ❤️',
+      new Notification('Love Notes for Regine 💖', {
+        body: 'Notifications enabled! You will receive daily reminders ❤️',
         icon: '/heart-icon.png',
+        tag: 'love-note-welcome',
+        requireInteraction: false,
       });
-    } else {
+      
+      toast({
+        title: 'Notifications Enabled! 💖',
+        description: 'Check your system notifications for a test message',
+      });
+    } else if (permission === 'denied') {
       toast({
         title: 'Permission Denied',
         description: 'Please enable notifications in your browser settings',
         variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Permission Dismissed',
+        description: 'Click the button again to enable notifications',
       });
     }
   };
