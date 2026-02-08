@@ -111,13 +111,23 @@ export default function AdminDashboard() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Love Notes Message</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   placeholder="e.g., Good Morning Beautiful 💖"
                   value={newNoteTitle}
                   onChange={(e) => setNewNoteTitle(e.target.value)}
                   className="border-border focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="content">Love Note Message</Label>
+                <Textarea
+                  id="content"
+                  placeholder="Write your love note here..."
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  className="min-h-[120px] border-border focus:ring-primary"
                 />
               </div>
             </div>
