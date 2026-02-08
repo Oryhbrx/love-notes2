@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useNotes } from '@/hooks/useNotes';
 
+// Public view - Love Notes for Regine
 export default function Index() {
   const [reply, setReply] = useState('');
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
