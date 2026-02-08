@@ -111,16 +111,6 @@ export default function AdminDashboard() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Recipient Name</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Regine Tapado 💖"
-                  value={newNoteTitle}
-                  onChange={(e) => setNewNoteTitle(e.target.value)}
-                  className="border-border focus:ring-primary"
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="content">Love Note Message</Label>
                 <Textarea
                   id="content"
@@ -128,6 +118,16 @@ export default function AdminDashboard() {
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   className="min-h-[150px] border-border focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="title">Recipient Name</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Regine Tapado 💖"
+                  value={newNoteTitle}
+                  onChange={(e) => setNewNoteTitle(e.target.value)}
+                  className="border-border focus:ring-primary"
                 />
               </div>
             </div>
