@@ -22,3 +22,4 @@
 - [DONE] Add archive feature
 - [DONE] Add create note dialog
 - [DONE] Connect to Firebase for data persistence
+- [DONE] Add push notifications with sound and vibration for new notes and replies
