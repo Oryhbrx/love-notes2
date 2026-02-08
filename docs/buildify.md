@@ -21,4 +21,4 @@
 - [DONE] Implement notification functionality
 - [DONE] Add archive feature
 - [DONE] Add create note dialog
-- [PENDING] Connect to Supabase for data persistence
+- [IN PROGRESS] Connect to Firebase for data persistence

@@ -5,14 +5,16 @@ import { Heart, BellOff, Bell, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useNotes } from '@/hooks/useNotes';
 
 export default function Index() {
   const [reply, setReply] = useState('');
-  const [replies, setReplies] = useState([
-    { id: 1, content: '😍', timestamp: 'Feb 6, 2026, 5:10 PM' }
-  ]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const { toast } = useToast();
+  const { notes, loading, addReply } = useNotes();
+
+  // Get the most recent active note
+  const currentNote = notes.find(note => !note.archived);
 
   useEffect(() => {
     // Check if notifications are already enabled
@@ -62,27 +64,40 @@ export default function Index() {
     }
   };
 
-  const handleSendReply = () => {
-    if (reply.trim()) {
-      setReplies([...replies, {
-        id: replies.length + 1,
-        content: reply,
-        timestamp: new Date().toLocaleString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        })
-      }]);
+  const handleSendReply = async () => {
+    if (reply.trim() && currentNote) {
+      await addReply(currentNote.id, reply);
       setReply('');
-      toast({
-        title: 'Reply Sent! 💕',
-        description: 'Your reply has been added',
-      });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Heart className="w-16 h-16 mx-auto text-primary fill-primary animate-pulse" />
+          <p className="text-muted-foreground">Loading love notes...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentNote) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <Heart className="w-16 h-16 mx-auto text-primary fill-primary" />
+          <h1 className="text-3xl font-serif text-foreground">No Love Notes Yet</h1>
+          <p className="text-muted-foreground">Check back soon for your daily reminder! ❤️</p>
+          <Link to="/admin/login">
+            <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
+              Admin Login
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -91,7 +106,7 @@ export default function Index() {
         <div className="text-center space-y-4">
           <Heart className="w-16 h-16 mx-auto text-primary fill-primary" />
           <h1 className="text-5xl font-serif text-foreground">Love Notes for Regine</h1>
-          <p className="text-muted-foreground text-lg">Your daily reminder ❤️</p>
+          <p className="text-muted-foreground text-lg">{currentNote.content}</p>
         </div>
 
         {/* Enable Notifications Button */}
@@ -119,20 +134,24 @@ export default function Index() {
         <div className="bg-card rounded-2xl shadow-lg p-8 space-y-6">
           {/* Note Header */}
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-script text-primary">Regine Tapado 💖</h2>
-            <p className="text-sm text-muted-foreground">Friday, February 6, 2026 at 5:10 PM</p>
+            <h2 className="text-3xl font-script text-primary">{currentNote.title}</h2>
+            <p className="text-sm text-muted-foreground">{currentNote.timestamp}</p>
           </div>
 
           {/* Replies Section */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Your Replies:</h3>
             
-            {replies.map((r) => (
-              <div key={r.id} className="bg-secondary/30 rounded-xl p-4 space-y-1">
-                <p className="text-lg">{r.content}</p>
-                <p className="text-xs text-muted-foreground">{r.timestamp}</p>
-              </div>
-            ))}
+            {currentNote.replies.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">No replies yet. Be the first to reply! 💕</p>
+            ) : (
+              currentNote.replies.map((r) => (
+                <div key={r.id} className="bg-secondary/30 rounded-xl p-4 space-y-1">
+                  <p className="text-lg">{r.content}</p>
+                  <p className="text-xs text-muted-foreground">{r.timestamp}</p>
+                </div>
+              ))
+            )}
 
             {/* Reply Input */}
             <div className="relative">
