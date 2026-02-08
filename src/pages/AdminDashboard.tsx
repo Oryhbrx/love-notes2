@@ -22,11 +22,11 @@ export default function AdminDashboard() {
   };
 
   const handleCreateNote = async () => {
-    if (!newNoteTitle.trim() || !newNoteContent.trim()) {
+    if (!newNoteTitle.trim()) {
       return;
     }
 
-    await createNote(newNoteTitle, newNoteContent);
+    await createNote(newNoteTitle, newNoteTitle);
     setNewNoteTitle('');
     setNewNoteContent('');
     setIsCreateDialogOpen(false);
@@ -165,8 +165,7 @@ export default function AdminDashboard() {
               activeNotes.map((note) => (
                 <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4">
                   <div className="space-y-2">
-                    <p className="text-2xl text-foreground">{note.content}</p>
-                    <h3 className="text-xl font-script text-primary mt-2">{note.title}</h3>
+                    <p className="text-2xl text-foreground">{note.title}</p>
                     <p className="text-sm text-muted-foreground">{note.timestamp}</p>
                   </div>
 
@@ -216,8 +215,7 @@ export default function AdminDashboard() {
               archivedNotes.map((note) => (
                 <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4 opacity-75">
                   <div className="space-y-2">
-                    <p className="text-2xl text-foreground">{note.content}</p>
-                    <h3 className="text-xl font-script text-primary mt-2">{note.title}</h3>
+                    <p className="text-2xl text-foreground">{note.title}</p>
                     <p className="text-sm text-muted-foreground">{note.timestamp}</p>
                   </div>
 
