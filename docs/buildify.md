@@ -21,4 +21,4 @@
 - [DONE] Implement notification functionality
 - [DONE] Add archive feature
 - [DONE] Add create note dialog
-- [IN PROGRESS] Connect to Firebase for data persistence
+- [DONE] Connect to Firebase for data persistence

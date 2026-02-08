@@ -8,38 +8,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-  timestamp: string;
-  replies: Reply[];
-  archived: boolean;
-}
-
-interface Reply {
-  id: number;
-  content: string;
-  timestamp: string;
-}
+import { useNotes } from '@/hooks/useNotes';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      title: 'Regine Tapado 💖',
-      content: 'You are loved today and always! ❤️',
-      timestamp: 'Feb 6, 2026, 5:10 PM',
-      replies: [
-        { id: 1, content: '😍', timestamp: 'Feb 6, 2026, 5:10 PM' }
-      ],
-      archived: false
-    }
-  ]);
+  const { notes, loading, createNote, deleteNote, archiveNote, unarchiveNote } = useNotes();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [newNoteContent, setNewNoteContent] = useState('');
@@ -48,75 +21,44 @@ export default function AdminDashboard() {
     navigate('/');
   };
 
-  const handleCreateNote = () => {
+  const handleCreateNote = async () => {
     if (!newNoteTitle.trim() || !newNoteContent.trim()) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please fill in both title and content',
-        variant: 'destructive',
-      });
       return;
     }
 
-    const newNote: Note = {
-      id: Date.now(),
-      title: newNoteTitle,
-      content: newNoteContent,
-      timestamp: new Date().toLocaleString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      }),
-      replies: [],
-      archived: false
-    };
-
-    setNotes([newNote, ...notes]);
+    await createNote(newNoteTitle, newNoteContent);
     setNewNoteTitle('');
     setNewNoteContent('');
     setIsCreateDialogOpen(false);
-    
-    toast({
-      title: 'Love Note Created! 💖',
-      description: 'Your new love note has been created',
-    });
   };
 
-  const handleDeleteNote = (noteId: number) => {
+  const handleDeleteNote = async (noteId: string) => {
     if (confirm('Are you sure you want to delete this note?')) {
-      setNotes(notes.filter(note => note.id !== noteId));
-      toast({
-        title: 'Note Deleted',
-        description: 'The love note has been removed',
-      });
+      await deleteNote(noteId);
     }
   };
 
-  const handleArchiveNote = (noteId: number) => {
-    setNotes(notes.map(note => 
-      note.id === noteId ? { ...note, archived: true } : note
-    ));
-    toast({
-      title: 'Note Archived',
-      description: 'The love note has been archived',
-    });
+  const handleArchiveNote = async (noteId: string) => {
+    await archiveNote(noteId);
   };
 
-  const handleUnarchiveNote = (noteId: number) => {
-    setNotes(notes.map(note => 
-      note.id === noteId ? { ...note, archived: false } : note
-    ));
-    toast({
-      title: 'Note Restored',
-      description: 'The love note has been restored',
-    });
+  const handleUnarchiveNote = async (noteId: string) => {
+    await unarchiveNote(noteId);
   };
 
   const activeNotes = notes.filter(note => !note.archived);
   const archivedNotes = notes.filter(note => note.archived);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Heart className="w-16 h-16 mx-auto text-primary fill-primary animate-pulse" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
