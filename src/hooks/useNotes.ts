@@ -81,6 +81,21 @@ export function useNotes() {
         createdAt: Timestamp.now()
       });
 
+      // Send push notification for new note
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification('New Love Note Created! 💖', {
+          body: `For ${title}: "${content.substring(0, 60)}${content.length > 60 ? '...' : ''}"`,
+          icon: '/heart-icon.png',
+          tag: `note-${Date.now()}`,
+          requireInteraction: false,
+          vibrate: [300, 100, 300, 100, 300], // Triple vibration pattern
+          silent: false,
+        });
+
+        // Auto-close after 6 seconds
+        setTimeout(() => notification.close(), 6000);
+      }
+
       toast({
         title: 'Love Note Created! 💖',
         description: 'Your new love note has been created',
@@ -171,6 +186,21 @@ export function useNotes() {
       await updateNote(noteId, {
         replies: [...note.replies, newReply]
       });
+
+      // Send push notification to admin
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification('New Reply Received! 💕', {
+          body: `"${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+          icon: '/heart-icon.png',
+          tag: `reply-${noteId}-${Date.now()}`,
+          requireInteraction: false,
+          vibrate: [200, 100, 200], // Vibration pattern: vibrate-pause-vibrate
+          silent: false, // Play default notification sound
+        });
+
+        // Auto-close notification after 5 seconds
+        setTimeout(() => notification.close(), 5000);
+      }
 
       toast({
         title: 'Reply Sent! 💕',
