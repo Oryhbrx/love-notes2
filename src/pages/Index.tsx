@@ -152,7 +152,8 @@ export default function Index() {
         <div className="bg-card rounded-2xl shadow-lg p-8 space-y-6">
           {/* Note Content */}
           <div className="text-center space-y-2">
-            <p className="text-3xl text-foreground">{currentNote.title}</p>
+            <p className="text-3xl text-foreground">{currentNote.content}</p>
+            <h2 className="text-2xl font-script text-primary mt-4">{currentNote.title}</h2>
             <p className="text-sm text-muted-foreground">{currentNote.timestamp}</p>
           </div>
 
