@@ -119,11 +119,11 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-8">
-        {/* Header - Love note content displayed prominently */}
+        {/* Header */}
         <div className="text-center space-y-4">
           <Heart className="w-16 h-16 mx-auto text-primary fill-primary" />
-          <h1 className="text-5xl font-serif text-foreground">{currentNote.content}</h1>
-          <p className="text-muted-foreground text-lg">To: Regine</p>
+          <h1 className="text-4xl font-serif text-foreground">Love Notes for Regine</h1>
+          <p className="text-muted-foreground">Your daily reminder ❤️</p>
         </div>
 
         {/* Enable Notifications Button */}
