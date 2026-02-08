@@ -122,8 +122,8 @@ export default function Index() {
         {/* Header */}
         <div className="text-center space-y-4">
           <Heart className="w-16 h-16 mx-auto text-primary fill-primary" />
-          <h1 className="text-5xl font-serif text-foreground">Love Notes for Regine</h1>
-          <p className="text-muted-foreground text-lg">{currentNote.content}</p>
+          <h1 className="text-5xl font-serif text-foreground">{currentNote.content}</h1>
+          <p className="text-muted-foreground text-lg">To: Regine</p>
         </div>
 
         {/* Enable Notifications Button */}
