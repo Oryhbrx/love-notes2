@@ -150,9 +150,10 @@ export default function Index() {
 
         {/* Love Note Card */}
         <div className="bg-card rounded-2xl shadow-lg p-8 space-y-6">
-          {/* Note Header */}
+          {/* Note Content */}
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-script text-primary">{currentNote.title}</h2>
+            <p className="text-3xl text-foreground">{currentNote.content}</p>
+            <h2 className="text-2xl font-script text-primary mt-4">{currentNote.title}</h2>
             <p className="text-sm text-muted-foreground">{currentNote.timestamp}</p>
           </div>
 

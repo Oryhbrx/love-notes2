@@ -111,6 +111,16 @@ export default function AdminDashboard() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
+                <Label htmlFor="title">Love Note Title</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Good Morning Beautiful 💖"
+                  value={newNoteTitle}
+                  onChange={(e) => setNewNoteTitle(e.target.value)}
+                  className="border-border focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="content">Love Note Message</Label>
                 <Textarea
                   id="content"
@@ -118,16 +128,6 @@ export default function AdminDashboard() {
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   className="min-h-[150px] border-border focus:ring-primary"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="title">Recipient Name</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Regine Tapado 💖"
-                  value={newNoteTitle}
-                  onChange={(e) => setNewNoteTitle(e.target.value)}
-                  className="border-border focus:ring-primary"
                 />
               </div>
             </div>
@@ -175,9 +175,9 @@ export default function AdminDashboard() {
               activeNotes.map((note) => (
                 <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-script text-primary">{note.title}</h3>
+                    <p className="text-2xl text-foreground">{note.content}</p>
+                    <h3 className="text-xl font-script text-primary mt-2">{note.title}</h3>
                     <p className="text-sm text-muted-foreground">{note.timestamp}</p>
-                    <p className="text-foreground mt-2">{note.content}</p>
                   </div>
 
                   <div className="space-y-2">
@@ -226,9 +226,9 @@ export default function AdminDashboard() {
               archivedNotes.map((note) => (
                 <div key={note.id} className="bg-card rounded-2xl shadow-lg p-6 space-y-4 opacity-75">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-script text-primary">{note.title}</h3>
+                    <p className="text-2xl text-foreground">{note.content}</p>
+                    <h3 className="text-xl font-script text-primary mt-2">{note.title}</h3>
                     <p className="text-sm text-muted-foreground">{note.timestamp}</p>
-                    <p className="text-foreground mt-2">{note.content}</p>
                   </div>
 
                   <div className="space-y-2">
